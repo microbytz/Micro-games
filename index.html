@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
   <body>
     <div class="app-shell">
@@ -269,6 +270,19 @@
 
         <section id="settings" class="panel">
           <div class="card-grid two-up">
+            <article class="card">
+              <p class="eyebrow">Authentication</p>
+              <h3>Sign In or Sign Up</h3>
+              <form id="login-form">
+                <input type="email" id="email" placeholder="Email" required />
+                <input type="password" id="password" placeholder="Password" required />
+                <button type="submit">Continue</button>
+              </form>
+              <div id="user-info" style="display: none;">
+                <p>You are logged in as: <span id="user-email"></span></p>
+                <button id="logout-button">Logout</button>
+              </div>
+            </article>
             <article class="card">
               <p class="eyebrow">Safety</p>
               <h3>Moderation without ID scanning</h3>

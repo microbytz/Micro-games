@@ -1,83 +1,104 @@
-const genres = {
-  Horror: 'High-tension discovery rail for atmospheric co-op, puzzle horror, survival, and narrative thriller experiences.',
-  'Town and City': 'Social roleplay hubs, neighborhood simulators, creator storefronts, and civic sandbox worlds.',
-  Comedy: 'Physics-first chaos, party mini-games, cartoon timing systems, and replayable challenge loops.',
-  Obby: 'Precision platforming, speedrun ghosts, and controller presets tuned for readability and fairness.',
-  RPG: 'Quest logs, class systems, persistence hooks, and collaborative worldbuilding spaces.',
-  'Sci-Fi': 'Vehicle combat, mech assembly, spatial builders, and modular environment kits.'
-};
+const SUPABASE_URL = 'https://haxzkbvxlogmugxrxztj.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhheHprYnZ4bG9nbXVneHJ4enRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5MzAyMjksImV4cCI6MjA4OTUwNjIyOX0.VrVV73SZAuaQ6nYydHcqDCOdPByZNT921ekOd3BB-dg';
 
-const threads = [
-  {
-    title: 'Harbor District bug watch',
-    body: 'Players and creators track collision issues, lighting regressions, and patch verification in one dedicated board.'
-  },
-  {
-    title: 'Comedy Jam weekly prompt',
-    body: 'A community-led thread for physics challenge ideas, playtest feedback, and featured replay clips.'
-  },
-  {
-    title: 'Tix economy balancing',
-    body: 'Developers compare reward loops, abuse prevention, and healthy sinks for non-premium progression.'
-  }
-];
+const { createClient } = supabase;
+const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const navButtons = document.querySelectorAll('.nav__item');
-const panels = document.querySelectorAll('.panel');
-const genreContainer = document.getElementById('genre-chips');
-const genreOutput = document.getElementById('genre-output');
-const forumPreview = document.getElementById('forum-preview');
-const forumToggle = document.getElementById('forum-toggle');
+console.log('Supabase client initialized');
 
-function renderGenres(selectedGenre) {
-  genreContainer.innerHTML = '';
-  Object.keys(genres).forEach((genre) => {
-    const chip = document.createElement('button');
-    chip.className = `chip${genre === selectedGenre ? ' is-selected' : ''}`;
-    chip.textContent = genre;
-    chip.addEventListener('click', () => renderGenres(genre));
-    genreContainer.appendChild(chip);
-  });
+document.addEventListener('DOMContentLoaded', () => {
+    // Navigation
+    const navButtons = document.querySelectorAll('.nav__item');
+    const panels = document.querySelectorAll('.panel');
 
-  genreOutput.innerHTML = `
-    <div class="forum-thread">
-      <strong>${selectedGenre}</strong>
-      <p>${genres[selectedGenre]}</p>
-    </div>
-  `;
-}
+    navButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const targetId = button.dataset.target;
 
-function renderThreads(expanded = false) {
-  const visibleThreads = expanded ? threads : threads.slice(0, 2);
-  forumPreview.innerHTML = visibleThreads
-    .map(
-      (thread) => `
-        <article class="forum-thread">
-          <strong>${thread.title}</strong>
-          <p>${thread.body}</p>
-        </article>
-      `
-    )
-    .join('');
+            navButtons.forEach(navButton => navButton.classList.remove('is-active'));
+            panels.forEach(panel => panel.classList.remove('is-visible'));
 
-  forumToggle.textContent = expanded ? 'Collapse threads' : 'Expand threads';
-  forumToggle.dataset.expanded = String(expanded);
-}
+            button.classList.add('is-active');
+            const targetPanel = document.getElementById(targetId);
+            if (targetPanel) {
+                targetPanel.classList.add('is-visible');
+            }
+        });
+    });
 
-navButtons.forEach((button) => {
-  button.addEventListener('click', () => {
-    navButtons.forEach((item) => item.classList.remove('is-active'));
-    panels.forEach((panel) => panel.classList.remove('is-visible'));
+    // Authentication
+    const loginForm = document.getElementById('login-form');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const userInfo = document.getElementById('user-info');
+    const userEmail = document.getElementById('user-email');
+    const logoutButton = document.getElementById('logout-button');
 
-    button.classList.add('is-active');
-    document.getElementById(button.dataset.target).classList.add('is-visible');
-  });
+    // Handle login/signup form submission
+    loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const email = emailInput.value;
+        const password = passwordInput.value;
+
+        // First, try to sign in
+        let { data, error } = await _supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
+
+        // If user doesn't exist, try to sign them up
+        if (error && error.message.includes('Invalid login credentials')) {
+            console.log('User not found, trying to sign up...');
+            const { data: signUpData, error: signUpError } = await _supabase.auth.signUp({
+                email,
+                password,
+            });
+
+            if (signUpError) {
+                alert(signUpError.message);
+                console.error('Sign up error:', signUpError);
+            } else {
+                updateUserUI(signUpData.user);
+            }
+        } else if (error) {
+            alert(error.message);
+            console.error('Sign in error:', error);
+        } else {
+            updateUserUI(data.user);
+        }
+    });
+
+    // Handle logout
+    logoutButton.addEventListener('click', async () => {
+        const { error } = await _supabase.auth.signOut();
+        if (error) {
+            console.error('Error logging out:', error);
+        } else {
+            updateUserUI(null);
+        }
+    });
+
+    // Update UI based on user session
+    function updateUserUI(user) {
+        if (user) {
+            userInfo.style.display = 'block';
+            userEmail.textContent = user.email;
+            loginForm.style.display = 'none';
+        } else {
+            userInfo.style.display = 'none';
+            loginForm.style.display = 'block';
+        }
+    }
+
+    // Check for an existing session
+    async function checkSession() {
+        const { data, error } = await _supabase.auth.getSession();
+        if (data.session) {
+            updateUserUI(data.session.user);
+        } else {
+            updateUserUI(null);
+        }
+    }
+
+    checkSession();
 });
-
-forumToggle.addEventListener('click', () => {
-  const expanded = forumToggle.dataset.expanded === 'true';
-  renderThreads(!expanded);
-});
-
-renderGenres('Horror');
-renderThreads(false);
