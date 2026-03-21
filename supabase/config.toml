@@ -1,0 +1,12 @@
+project_id = "micro-games"
+
+[auth]
+site_url = "http://127.0.0.1:4173"
+additional_redirect_urls = ["http://localhost:4173", "http://127.0.0.1:4173"]
+
+[db.seed]
+enabled = true
+sql_paths = ["./seed.sql"]
+
+[studio]
+enabled = true

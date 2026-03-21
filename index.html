@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Micro Arcade</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div>
+          <div class="brand">
+            <div class="brand__mark">M</div>
+            <div>
+              <p class="eyebrow">Micro Arcade</p>
+              <h1>Creator Platform</h1>
+            </div>
+          </div>
+
+          <nav class="nav">
+            <button class="nav__item is-active" data-target="home">Home</button>
+            <button class="nav__item" data-target="discover">Discover</button>
+            <button class="nav__item" data-target="studio">Studio</button>
+            <button class="nav__item" data-target="avatar">Avatar</button>
+            <button class="nav__item" data-target="settings">Settings</button>
+          </nav>
+        </div>
+
+        <div class="sidebar__footer card subtle-card">
+          <p class="eyebrow">Policy</p>
+          <h2>Manual creation only</h2>
+          <p>No generative AI for code, textures, or 3D assets.</p>
+        </div>
+      </aside>
+
+      <main class="content">
+        <header class="topbar card subtle-card">
+          <div>
+            <p class="eyebrow">Platform vision</p>
+            <h2>Community games with a professional creation workflow</h2>
+          </div>
+          <div class="topbar__actions">
+            <div class="status-pill">Dark mode / Supabase inspired</div>
+            <button class="button">Open Studio</button>
+          </div>
+        </header>
+
+        <section id="home" class="panel is-visible">
+          <div class="hero-grid">
+            <article class="card hero-card">
+              <p class="eyebrow">Design direction</p>
+              <h3>Roblox-scale creativity with a sharper, developer-tool aesthetic.</h3>
+              <p>
+                Micro Arcade prioritizes card-based workflows, high-contrast borders, and focused monochrome surfaces so the experience feels credible to creators without becoming intimidating to younger players.
+              </p>
+              <div class="hero-card__stats">
+                <div>
+                  <span>24.8k</span>
+                  <p>Daily creators</p>
+                </div>
+                <div>
+                  <span>180</span>
+                  <p>Featured legacy genres</p>
+                </div>
+                <div>
+                  <span>92%</span>
+                  <p>Manual tool coverage</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="card tix-card">
+              <p class="eyebrow">Legacy economy</p>
+              <h3>Tix returns as a participation currency</h3>
+              <ul>
+                <li>Earn through visits, publishing milestones, and forum participation.</li>
+                <li>Use for avatar cosmetics, templates, and discovery boosts.</li>
+                <li>Protected by anti-abuse caps and transparent ledger history.</li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="dashboard-grid">
+            <article class="card">
+              <div class="section-heading">
+                <div>
+                  <p class="eyebrow">Social systems</p>
+                  <h3>Global chat + friends</h3>
+                </div>
+                <span class="badge">Moderated</span>
+              </div>
+              <div class="list-stack">
+                <div class="list-row">
+                  <strong>#global</strong>
+                  <span>Real-time lobbies, trend topics, and event broadcasts.</span>
+                </div>
+                <div class="list-row">
+                  <strong>Friends graph</strong>
+                  <span>Party invites, join permissions, and shared studio sessions.</span>
+                </div>
+                <div class="list-row">
+                  <strong>Safety controls</strong>
+                  <span>Filtering, rate limits, reporting, and privacy controls without ID scanning.</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="card">
+              <div class="section-heading">
+                <div>
+                  <p class="eyebrow">Classic discovery</p>
+                  <h3>Genre sorting restored</h3>
+                </div>
+              </div>
+              <div class="chip-row" id="genre-chips"></div>
+              <div class="genre-output" id="genre-output"></div>
+            </article>
+
+            <article class="card">
+              <div class="section-heading">
+                <div>
+                  <p class="eyebrow">Community boards</p>
+                  <h3>Personal forums for every game</h3>
+                </div>
+                <button class="button button--ghost" id="forum-toggle">Expand threads</button>
+              </div>
+              <div class="forum-preview" id="forum-preview"></div>
+            </article>
+          </div>
+        </section>
+
+        <section id="discover" class="panel">
+          <div class="section-heading section-heading--spaced">
+            <div>
+              <p class="eyebrow">Discover</p>
+              <h3>Curated around classic genres and trusted community signals</h3>
+            </div>
+          </div>
+          <div class="card-grid three-up">
+            <article class="card experience-card">
+              <span class="badge">Horror</span>
+              <h4>Midnight Transit</h4>
+              <p>Atmospheric co-op puzzle horror with forum-driven chapter hunts.</p>
+            </article>
+            <article class="card experience-card">
+              <span class="badge">Town and City</span>
+              <h4>District Nine Blocks</h4>
+              <p>Social simulation with creator-owned shops and civic roleplay tools.</p>
+            </article>
+            <article class="card experience-card">
+              <span class="badge">Comedy</span>
+              <h4>Slipstream Stunts</h4>
+              <p>Physics slapstick arena built around vehicles, ramps, and replay sharing.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="studio" class="panel">
+          <div class="section-heading section-heading--spaced">
+            <div>
+              <p class="eyebrow">Micro Studio</p>
+              <h3>Hybrid workspace: Explorer + Properties + Blender-style viewport</h3>
+            </div>
+            <div class="status-pill">Viewport / Graph / Code</div>
+          </div>
+          <div class="studio-grid">
+            <article class="card studio-pane">
+              <div class="pane-header">
+                <h4>Explorer</h4>
+                <span>Scene hierarchy</span>
+              </div>
+              <ul class="tree">
+                <li>Workspace
+                  <ul>
+                    <li>Terrain</li>
+                    <li>Lighting</li>
+                    <li>PlayerSpawn</li>
+                    <li>HarborDistrict</li>
+                  </ul>
+                </li>
+                <li>UI</li>
+                <li>Scripts</li>
+              </ul>
+            </article>
+
+            <article class="card viewport-pane">
+              <div class="pane-header">
+                <h4>Viewport</h4>
+                <span>Translate / Rotate / Scale / Vertex Snap</span>
+              </div>
+              <div class="viewport-canvas">
+                <div class="viewport-toolbar">
+                  <span>Object</span>
+                  <span>Edit Mesh</span>
+                  <span>UV</span>
+                  <span>Physics Debug</span>
+                </div>
+                <div class="viewport-scene">
+                  <div class="grid"></div>
+                  <div class="mesh mesh--primary"></div>
+                  <div class="mesh mesh--secondary"></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="card studio-pane">
+              <div class="pane-header">
+                <h4>Properties</h4>
+                <span>Inspector</span>
+              </div>
+              <div class="property-group">
+                <label>Transform</label>
+                <div class="property-row"><span>Position</span><code>12, 4, -8</code></div>
+                <div class="property-row"><span>Rotation</span><code>0, 45, 0</code></div>
+                <div class="property-row"><span>Scale</span><code>1.2, 1.2, 1.2</code></div>
+              </div>
+              <div class="property-group">
+                <label>Physics</label>
+                <div class="property-row"><span>Collider</span><code>Convex Hull</code></div>
+                <div class="property-row"><span>Material</span><code>Brushed Steel</code></div>
+              </div>
+            </article>
+
+            <article class="card studio-pane studio-pane--wide">
+              <div class="pane-header">
+                <h4>Visual scripting</h4>
+                <span>Low-code graph</span>
+              </div>
+              <div class="node-editor">
+                <div class="node">On Player Enter</div>
+                <div class="node node--accent">Apply Force</div>
+                <div class="node">Award Tix</div>
+                <div class="node">Open Forum Prompt</div>
+              </div>
+            </article>
+
+            <article class="card studio-pane studio-pane--wide">
+              <div class="pane-header">
+                <h4>Code editor</h4>
+                <span>Lua / TypeScript</span>
+              </div>
+              <pre class="code-block">export function onCheckpointReached(player, checkpoint) {
+  player.wallet.addTix(5)
+  player.chat.notify(`#global`, `${player.name} secured ${checkpoint.label}`)
+  player.forums.unlockThread(`checkpoint-${checkpoint.id}`)
+}</pre>
+            </article>
+          </div>
+        </section>
+
+        <section id="avatar" class="panel">
+          <div class="card-grid two-up">
+            <article class="card">
+              <p class="eyebrow">Avatar lab</p>
+              <h3>Physics-aware customization</h3>
+              <p>Preview layered cosmetics, movement rigs, and animation sets against the same controller rules used in live experiences.</p>
+            </article>
+            <article class="card">
+              <p class="eyebrow">Economy links</p>
+              <h3>Tix-compatible inventory</h3>
+              <p>Creators can reward cosmetics, emotes, and workshop templates through engagement-driven progression.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="settings" class="panel">
+          <div class="card-grid two-up">
+            <article class="card">
+              <p class="eyebrow">Safety</p>
+              <h3>Moderation without ID scanning</h3>
+              <ul>
+                <li>Chat filtering and forum moderation queues</li>
+                <li>Friend, whisper, and join-permission controls</li>
+                <li>Evidence-based reporting workflows</li>
+              </ul>
+            </article>
+            <article class="card">
+              <p class="eyebrow">Creator settings</p>
+              <h3>Project governance</h3>
+              <ul>
+                <li>Role-based studio access</li>
+                <li>Version history and publish gates</li>
+                <li>Manual asset review checklist</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

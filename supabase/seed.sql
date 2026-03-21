@@ -1,0 +1,8 @@
+-- Micro Arcade local seed file
+--
+-- Add INSERT statements here after you create your first migrations.
+-- Example future seed domains:
+--   - classic_genres
+--   - starter_forum_categories
+--   - sample_tix_rewards
+--   - developer_test_accounts
