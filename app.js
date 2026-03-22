@@ -6,99 +6,122 @@ const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 console.log('Supabase client initialized');
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Navigation
-    const navButtons = document.querySelectorAll('.nav__item');
+document.addEventListener('DOMContentLoaded', async () => {
+    const { data: { session } } = await _supabase.auth.getSession();
+
+    const onLoginPage = window.location.pathname.endsWith('login.html');
+
+    if (onLoginPage) {
+        if (session) {
+            window.location.replace('index.html');
+            return;
+        }
+        handleLoginForm();
+    } else {
+        if (!session) {
+            window.location.replace('login.html');
+            return;
+        }
+        setupMainApp(session.user);
+    }
+});
+
+function handleLoginForm() {
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const loginButton = document.getElementById('login-button');
+    const signupButton = document.getElementById('signup-button');
+    const guestButton = document.getElementById('guest-button');
+    const errorMessage = document.getElementById('error-message');
+
+    const setButtonsDisabled = (disabled) => {
+        loginButton.disabled = disabled;
+        signupButton.disabled = disabled;
+        guestButton.disabled = disabled;
+    };
+
+    loginButton.addEventListener('click', async () => {
+        setButtonsDisabled(true);
+        errorMessage.textContent = '';
+
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        const { error } = await _supabase.auth.signInWithPassword({ email, password });
+
+        if (error) {
+            errorMessage.textContent = error.message;
+            setButtonsDisabled(false);
+        } else {
+            window.location.replace('index.html');
+        }
+    });
+
+    signupButton.addEventListener('click', async () => {
+        setButtonsDisabled(true);
+        errorMessage.textContent = '';
+
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        const { error } = await _supabase.auth.signUp({ email, password });
+
+        if (error) {
+            errorMessage.textContent = error.message;
+            setButtonsDisabled(false);
+        } else {
+            alert('Sign up successful! Please check your email to confirm.');
+            setButtonsDisabled(false);
+        }
+    });
+
+    guestButton.addEventListener('click', async () => {
+        setButtonsDisabled(true);
+        errorMessage.textContent = '';
+
+        const { error } = await _supabase.auth.signInAnonymously();
+
+        if (error) {
+            errorMessage.textContent = error.message;
+            setButtonsDisabled(false);
+        } else {
+            window.location.replace('index.html');
+        }
+    });
+}
+
+function setupMainApp(user) {
+    const navLinks = document.querySelectorAll('.nav__item');
     const panels = document.querySelectorAll('.panel');
 
-    navButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const targetId = button.dataset.target;
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = link.dataset.target;
 
-            navButtons.forEach(navButton => navButton.classList.remove('is-active'));
             panels.forEach(panel => panel.classList.remove('is-visible'));
+            navLinks.forEach(navLink => navLink.classList.remove('is-active'));
 
-            button.classList.add('is-active');
             const targetPanel = document.getElementById(targetId);
             if (targetPanel) {
                 targetPanel.classList.add('is-visible');
+                link.classList.add('is-active');
+            } else {
+                document.getElementById('home').classList.add('is-visible');
+                document.querySelector('[data-target=home]').classList.add('is-active');
             }
         });
     });
 
-    // Authentication
-    const loginForm = document.getElementById('login-form');
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
     const userInfo = document.getElementById('user-info');
     const userEmail = document.getElementById('user-email');
     const logoutButton = document.getElementById('logout-button');
 
-    // Handle login/signup form submission
-    loginForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const email = emailInput.value;
-        const password = passwordInput.value;
+    if (user) {
+        userInfo.style.display = 'flex';
+        userEmail.textContent = user.is_anonymous ? 'Guest User' : user.email;
+    }
 
-        // First, try to sign in
-        let { data, error } = await _supabase.auth.signInWithPassword({
-            email,
-            password,
-        });
-
-        // If user doesn't exist, try to sign them up
-        if (error && error.message.includes('Invalid login credentials')) {
-            console.log('User not found, trying to sign up...');
-            const { data: signUpData, error: signUpError } = await _supabase.auth.signUp({
-                email,
-                password,
-            });
-
-            if (signUpError) {
-                alert(signUpError.message);
-                console.error('Sign up error:', signUpError);
-            } else {
-                updateUserUI(signUpData.user);
-            }
-        } else if (error) {
-            alert(error.message);
-            console.error('Sign in error:', error);
-        } else {
-            updateUserUI(data.user);
-        }
-    });
-
-    // Handle logout
     logoutButton.addEventListener('click', async () => {
-        const { error } = await _supabase.auth.signOut();
-        if (error) {
-            console.error('Error logging out:', error);
-        } else {
-            updateUserUI(null);
-        }
+        await _supabase.auth.signOut();
+        window.location.replace('login.html');
     });
-
-    // Update UI based on user session
-    function updateUserUI(user) {
-        if (user) {
-            userInfo.style.display = 'block';
-            userEmail.textContent = user.email;
-            loginForm.style.display = 'none';
-        } else {
-            userInfo.style.display = 'none';
-            loginForm.style.display = 'block';
-        }
-    }
-
-    // Check for an existing session
-    async function checkSession() {
-        const { data, error } = await _supabase.auth.getSession();
-        if (data.session) {
-            updateUserUI(data.session.user);
-        } else {
-            updateUserUI(null);
-        }
-    }
-
-    checkSession();
-});
+}
